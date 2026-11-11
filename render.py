@@ -6,6 +6,8 @@
     python3 render.py                 -> zidane_card.mp4
     python3 render.py --preview 4 11  -> PNG-кадры на 4 с и 11 с в preview/
     python3 render.py --lang en       -> zidane_card_en.mp4 (английская версия)
+    python3 render.py --player ronaldo --lang en -> ronaldo_card_en.mp4
+Данные игроков — в players.py.
 """
 import math
 import os
@@ -18,13 +20,22 @@ from functools import lru_cache
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
+from players import PLAYERS
+
 W, H = 1080, 1920
 FPS = 30
 DUR = 30.0
 N = int(FPS * DUR)
-LANG = "en" if "--lang" in sys.argv and sys.argv[sys.argv.index("--lang") + 1] == "en" else "ru"
+
+
+def _arg(name, default):
+    return sys.argv[sys.argv.index(name) + 1] if name in sys.argv else default
+
+
+LANG = "en" if _arg("--lang", "ru") == "en" else "ru"
+P = PLAYERS[_arg("--player", "zidane")]
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                   "zidane_card_en.mp4" if LANG == "en" else "zidane_card.mp4")
+                   P["out"] + ("_en.mp4" if LANG == "en" else ".mp4"))
 
 # Все надписи пишутся по-русски; для английской версии подменяются здесь.
 EN = {
@@ -254,17 +265,18 @@ def draw_jersey(img, cx, cy, s):
     ImageDraw.Draw(sh).polygon([(x + 10, y + 16) for x, y in pts], fill=(60, 35, 0, 120))
     img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(14)))
     d = ImageDraw.Draw(img)
-    d.polygon(pts, fill=(26, 44, 112))
-    # белые манжеты и ворот
-    d.line([(cx - 1.30 * s, cy - 0.22 * s), (cx - 0.95 * s, cy)], fill=WHITE, width=int(s * 0.07))
-    d.line([(cx + 1.30 * s, cy - 0.22 * s), (cx + 0.95 * s, cy)], fill=WHITE, width=int(s * 0.07))
+    J = P["jersey"]
+    d.polygon(pts, fill=J["body"])
+    # манжеты и ворот
+    d.line([(cx - 1.30 * s, cy - 0.22 * s), (cx - 0.95 * s, cy)], fill=J["trim"], width=int(s * 0.07))
+    d.line([(cx + 1.30 * s, cy - 0.22 * s), (cx + 0.95 * s, cy)], fill=J["trim"], width=int(s * 0.07))
     d.line([(cx - 0.33 * s, cy - 1.0 * s), (cx, cy - 0.72 * s), (cx + 0.33 * s, cy - 1.0 * s)],
-           fill=WHITE, width=int(s * 0.06))
-    # полоска триколора на груди
+           fill=J["trim"], width=int(s * 0.06))
+    # полоска цветов флага на груди
     by = cy - 0.42 * s
-    for i, col in enumerate([(30, 70, 170), WHITE, (220, 40, 50)]):
+    for i, col in enumerate(J["stripe"]):
         d.rectangle((cx - 0.76 * s + i * 0.507 * s, by, cx - 0.76 * s + (i + 1) * 0.507 * s, by + 0.07 * s), fill=col)
-    num = timg("10", BLACK, int(s * 0.95), fill=WHITE, stroke=3, sfill=(200, 160, 70))
+    num = timg(J["number"], BLACK, int(s * 0.95), fill=J["num"], stroke=3, sfill=J["num_stroke"])
     img.alpha_composite(num, (int(cx - num.width / 2), int(cy + 0.25 * s - num.height / 2)))
 
 
@@ -286,21 +298,21 @@ def build_front():
 
     lx = CW * 0.20
     blit_on = lambda im, x, y: img.alpha_composite(im, (int(x - im.width / 2), int(y - im.height / 2)))
-    blit_on(timg("96", BLACK, 170, fill=INK), lx, CH * 0.165)
-    blit_on(timg("ЦАП", XB, 56, fill=INK), lx, CH * 0.255)
+    blit_on(timg(P["rating"], BLACK, 170, fill=INK), lx, CH * 0.165)
+    blit_on(timg(P["pos"], XB, 56, fill=INK), lx, CH * 0.255)
     d.line([(lx - 55, CH * 0.295), (lx + 55, CH * 0.295)], fill=INK, width=3)
     fx, fy, fw, fh = lx - 52, CH * 0.315, 104, 68
-    for i, col in enumerate([(30, 60, 160), WHITE, (220, 40, 50)]):
-        d.rectangle((fx + i * fw / 3, fy, fx + (i + 1) * fw / 3, fy + fh), fill=col)
+    mini = Image.fromarray(np.clip(P["flag"](fw, fh), 0, 255).astype(np.uint8), "RGB")
+    img.paste(mini, (int(fx), int(fy)))
     d.rectangle((fx, fy, fx + fw, fy + fh), outline=INK, width=2)
     d.line([(lx - 55, CH * 0.395), (lx + 55, CH * 0.395)], fill=INK, width=3)
     d.ellipse((lx - 46, CH * 0.415, lx + 46, CH * 0.415 + 92), fill=INK)
     d.polygon(star_pts(lx, CH * 0.415 + 46, 34, 14), fill=GOLD_L)
 
     ny = CH * 0.585
-    blit_on(timg("ZIDANE", BLACK, 108, fill=INK, tracking=4), CW / 2, ny)
+    blit_on(timg(P["card_name"], BLACK, 108, fill=INK, tracking=4), CW / 2, ny)
     d.line([(CW * 0.14, CH * 0.645), (CW * 0.86, CH * 0.645)], fill=INK, width=3)
-    stats = [("85", "СКР"), ("91", "УДР"), ("95", "ПАС"), ("97", "ДРБ"), ("76", "ЗЩТ"), ("88", "ФИЗ")]
+    stats = P["card_stats"]
     for i, (v, lab) in enumerate(stats):
         col, row = i // 3, i % 3
         x = CW * (0.17 if col == 0 else 0.575)
@@ -320,7 +332,7 @@ def build_back():
     img = Image.fromarray(np.dstack([rgb, a]).astype(np.uint8), "RGBA")
     d = ImageDraw.Draw(img)
     d.polygon(shape(CW, CH, 22), outline=GOLD, width=6)
-    z = timg("Z", BLACK, 520, fill=GOLD, glow=10, gcol=(255, 190, 80), galpha=0.6)
+    z = timg(P["back_letter"], BLACK, 520, fill=GOLD, glow=10, gcol=(255, 190, 80), galpha=0.6)
     img.alpha_composite(z, (int(CW / 2 - z.width / 2), int(CH * 0.45 - z.height / 2)))
     return img
 
@@ -376,6 +388,9 @@ BLOB_W = make_blob(900, (255, 255, 255), 2.2)
 BLOB_G = make_blob(900, (255, 196, 90), 2.0)
 
 
+FLAG_BASE = P["flag"](760, 500)
+
+
 def flag_frame(t, w=760, h=500):
     xx = np.arange(w, dtype=np.float32)
     dy = 26 * np.sin(xx / 95 - t * 6) * (0.25 + xx / w)
@@ -383,13 +398,10 @@ def flag_frame(t, w=760, h=500):
     hh = h + 80
     yy = np.arange(hh, dtype=np.float32)[:, None] - 40 - dy[None, :]
     inside = (yy >= 0) & (yy < h)
-    cols = np.zeros((w, 3), np.float32)
-    cols[: w // 3] = (30, 60, 170)
-    cols[w // 3: 2 * w // 3] = (245, 245, 245)
-    cols[2 * w // 3:] = (225, 40, 55)
-    cols *= shade[:, None]
+    src = FLAG_BASE
+    sy = np.clip(yy, 0, h - 1).astype(np.int32)
     arr = np.zeros((hh, w, 4), np.float32)
-    arr[..., :3] = cols[None, :, :]
+    arr[..., :3] = src[sy, np.arange(w)[None, :]] * shade[None, :, None]
     arr[..., 3] = inside * 255
     return Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8), "RGBA")
 
@@ -402,12 +414,7 @@ def rounded_plate(w, h, fill=(18, 22, 48, 225), accent=GOLD, r=26):
     return im
 
 
-CLUBS = [
-    ("1989–1992", "КАНН", "61", "6"),
-    ("1992–1996", "БОРДО", "139", "28"),
-    ("1996–2001", "ЮВЕНТУС", "151", "24"),
-    ("2001–2006", "РЕАЛ МАДРИД", "155", "37"),
-]
+CLUBS = P["clubs"]
 
 
 def build_club_plate(years, name, games, goals):
@@ -427,21 +434,7 @@ def build_club_plate(years, name, games, goals):
 
 CLUB_PLATES = [build_club_plate(*c) for c in CLUBS]
 
-TROPHIES = [
-    ("1998", "ЧЕМПИОН", "МИРА"),
-    ("2000", "ЧЕМПИОН", "ЕВРОПЫ"),
-    ("2002", "ЛИГА", "ЧЕМПИОНОВ"),
-    ("1998", "ЗОЛОТОЙ", "МЯЧ"),
-    ("×3", "ИГРОК ГОДА", "ФИФА"),
-    ("×2", "ЧЕМПИОН", "ИТАЛИИ"),
-] if LANG == "ru" else [
-    ("1998", "WORLD CUP", "WINNER"),
-    ("2000", "EURO", "WINNER"),
-    ("2002", "CHAMPIONS", "LEAGUE"),
-    ("1998", "BALLON", "D'OR"),
-    ("×3", "FIFA WORLD", "PLAYER"),
-    ("×2", "SERIE A", "CHAMPION"),
-]
+TROPHIES = P["trophies_ru"] if LANG == "ru" and P["trophies_ru"] else P["trophies_en"]
 
 
 def build_trophy(big, l1, l2):
@@ -461,7 +454,7 @@ def build_trophy(big, l1, l2):
 
 TROPHY_BADGES = [build_trophy(*x) for x in TROPHIES]
 
-STATS = [("СКОРОСТЬ", 85), ("УДАРЫ", 91), ("ПАСЫ", 95), ("ДРИБЛИНГ", 97), ("ЗАЩИТА", 76), ("ФИЗИКА", 88)]
+STATS = P["stats"]
 
 # --------------------------------------------------------------------------- timeline
 
@@ -474,11 +467,11 @@ def render(t):
     if t < 3.5:
         tint, ray = (90, 70, 30), 0.25 + 0.6 * prog(t, 0, 3.5)
     elif t < 5.3:
-        tint, ray = (30, 55, 140), 0.9
+        tint, ray = P["country_tint"], 0.9
     elif t < 7.1:
         tint, ray = (120, 90, 30), 0.9
     elif t < 9.0:
-        tint, ray = (90, 70, 150), 0.9
+        tint, ray = P["club_tint"], 0.9
     else:
         tint, ray = (95, 72, 32), 0.75
     canvas = background(t, tint, ray)
@@ -504,24 +497,23 @@ def render(t):
         p = ease_out(prog(t, 3.5, 4.3))
         blit(canvas, BLOB_W, W / 2, 900, scale=1.6, alpha=0.18 * a)
         blit(canvas, flag_frame(t), W / 2, 860, scale=1.25 - 0.25 * p, alpha=a)
-        blit(canvas, timg("ФРАНЦИЯ", BLACK, 140, fill=WHITE, glow=14, gcol=(80, 120, 255), galpha=0.7),
+        blit(canvas, timg(P["country"], BLACK, 140, fill=WHITE, glow=14, gcol=P["country_glow"], galpha=0.7),
              W / 2, 1290, scale=1.15 - 0.15 * p, alpha=a)
     a = win(t, 5.3, 7.1, 0.2, 0.2)
     if a:
         p = ease_out(prog(t, 5.3, 6.1))
-        blit(canvas, timg("ЦАП", BLACK, 330, fill=GOLD_L, glow=22, gcol=(255, 160, 30), galpha=0.8),
+        blit(canvas, timg(P["pos"], BLACK, 330, fill=GOLD_L, glow=22, gcol=(255, 160, 30), galpha=0.8),
              W / 2, 880, scale=1.3 - 0.3 * p, alpha=a)
-        blit(canvas, timg("АТАКУЮЩИЙ ПОЛУЗАЩИТНИК", BOLD, 42, fill=WHITE, tracking=8), W / 2, 1110,
+        blit(canvas, timg(P["pos_long"], BOLD, 42, fill=WHITE, tracking=8), W / 2, 1110,
              alpha=a * ease_out(prog(t, 5.6, 6.3)))
     a = win(t, 7.1, 9.0, 0.2, 0.25)
     if a:
         p = ease_out(prog(t, 7.1, 7.9))
         s = 1.25 - 0.25 * p
-        blit(canvas, timg("РЕАЛ", BLACK, 230, fill=WHITE, glow=18, gcol=(170, 130, 255), galpha=0.7),
-             W / 2, 800, scale=s, alpha=a)
-        blit(canvas, timg("МАДРИД", BLACK, 170, fill=WHITE, glow=16, gcol=(170, 130, 255), galpha=0.7),
-             W / 2, 1010, scale=s, alpha=a)
-        blit(canvas, timg("ЮВЕНТУС · РЕАЛ · СБОРНАЯ ФРАНЦИИ", BOLD, 34, fill=GOLD, tracking=5), W / 2, 1170,
+        for txt, size, y in P["club_lines"]:
+            blit(canvas, timg(txt, BLACK, size, fill=WHITE, glow=18, gcol=P["club_glow"], galpha=0.7),
+                 W / 2, y, scale=s, alpha=a)
+        blit(canvas, timg(P["club_sub"], BOLD, 34, fill=GOLD, tracking=5), W / 2, 1170,
              alpha=a * ease_out(prog(t, 7.4, 8.1)))
 
     # ---- 3–4. Карточка: вылет, представление, характеристики
@@ -553,9 +545,9 @@ def render(t):
 
         a = win(t, 11.0, 13.4, 0.5, 0.4)
         if a:
-            blit(canvas, timg("ЗИНЕДИН ЗИДАН", BLACK, 84, fill=WHITE, tracking=4, glow=10, gcol=(255, 180, 60), galpha=0.5),
+            blit(canvas, timg(P["full_name"], BLACK, 84, fill=WHITE, tracking=4, glow=10, gcol=(255, 180, 60), galpha=0.5),
                  W / 2, 190, alpha=a, scale=0.9 + 0.1 * ease_out(prog(t, 11.0, 11.7)))
-            blit(canvas, timg("ZIZOU · 96 OVR", XB, 48, fill=GOLD, tracking=10), W / 2, 1745,
+            blit(canvas, timg(f'{P["nickname"]} · {P["rating"]} OVR', XB, 48, fill=GOLD, tracking=10), W / 2, 1745,
                  alpha=a * ease_out(prog(t, 11.4, 12.0)))
 
         # характеристики
@@ -595,7 +587,7 @@ def render(t):
             p = ease_back(prog(t, st, st + 0.55), 1.2)
             x = W / 2 + (1 - p) * 1100
             blit(canvas, pl, x, 560 + i * 270, alpha=a * clamp(prog(t, st, st + 0.3)))
-        blit(canvas, timg("СБОРНАЯ ФРАНЦИИ: 108 МАТЧЕЙ · 31 ГОЛ", XB, 38, fill=WHITE, tracking=3), W / 2, 1700,
+        blit(canvas, timg(P["national"], XB, 38, fill=WHITE, tracking=3), W / 2, 1700,
              alpha=a * ease_out(prog(t, 21.9, 22.5)))
 
     # ---- 5b. Трофеи 23.6–27
@@ -615,13 +607,13 @@ def render(t):
     # ---- 6. Финал 27–30
     if t >= 27.0:
         p = ease_out(prog(t, 27.0, 28.0))
-        blit(canvas, timg("ZIZOU", BLACK, 300, fill=(255, 210, 120), tracking=6), W / 2, 880,
+        blit(canvas, timg(P["nickname"], BLACK, 300, fill=(255, 210, 120), tracking=6), W / 2, 880,
              scale=1.15 - 0.1 * p, alpha=0.13 * p)
         draw_card(canvas, W / 2, 860 + 12 * math.sin(t * 2.2), 0.6 + 0.42 * p, (1 - p) * 2 * math.pi,
                   1.0, sheen_at(t, [27.9, 29.0], 0.8), 0.7 + 0.2 * math.sin(t * 3))
-        blit(canvas, timg("ЗИНЕДИН ЗИДАН", BLACK, 78, fill=WHITE, tracking=4), W / 2, 1520,
+        blit(canvas, timg(P["full_name"], BLACK, 78, fill=WHITE, tracking=4), W / 2, 1520,
              alpha=ease_out(prog(t, 27.6, 28.3)))
-        blit(canvas, timg("ЛЕГЕНДА · 96", XB, 54, fill=GOLD, tracking=12, glow=8, gcol=(255, 170, 40), galpha=0.5),
+        blit(canvas, timg(tr("ЛЕГЕНДА") + " · " + P["rating"], XB, 54, fill=GOLD, tracking=12, glow=8, gcol=(255, 170, 40), galpha=0.5),
              W / 2, 1615, alpha=ease_out(prog(t, 27.9, 28.6)))
 
     # ---- пост: вспышки, затемнение

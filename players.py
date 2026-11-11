@@ -1,0 +1,119 @@
+"""Данные игроков для серии карточек-легенд. render.py берёт игрока по ключу: --player zidane|ronaldo.
+
+Надписи Зидана записаны по-русски (английская версия — через словарь EN в render.py),
+надписи Роналдо — сразу по-английски.
+Рейтинги карточек — придуманные «игровые», не официальные цифры.
+"""
+import numpy as np
+
+
+def flag_france(w, h):
+    a = np.zeros((h, w, 3), np.float32)
+    a[:, : w // 3] = (30, 60, 170)
+    a[:, w // 3: 2 * w // 3] = (245, 245, 245)
+    a[:, 2 * w // 3:] = (225, 40, 55)
+    return a
+
+
+def flag_brazil(w, h):
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    a = np.zeros((h, w, 3), np.float32)
+    a[:] = (0, 150, 60)
+    cx, cy = w / 2, h / 2
+    rhomb = np.abs(xx - cx) / (w * 0.42) + np.abs(yy - cy) / (h * 0.40) <= 1
+    a[rhomb] = (254, 210, 0)
+    circ = np.hypot(xx - cx, yy - cy) <= h * 0.22
+    a[circ] = (20, 40, 130)
+    band = circ & (np.abs((yy - cy) - 0.18 * (xx - cx) + h * 0.02) < h * 0.025)
+    a[band] = (245, 245, 245)
+    return a
+
+
+ZIDANE = {
+    "out": "zidane_card",
+    "flag": flag_france,
+    "country": "ФРАНЦИЯ",
+    "country_glow": (80, 120, 255),
+    "country_tint": (30, 55, 140),
+    "pos": "ЦАП",
+    "pos_long": "АТАКУЮЩИЙ ПОЛУЗАЩИТНИК",
+    "club_lines": [("РЕАЛ", 230, 800), ("МАДРИД", 170, 1010)],
+    "club_glow": (170, 130, 255),
+    "club_tint": (90, 70, 150),
+    "club_sub": "ЮВЕНТУС · РЕАЛ · СБОРНАЯ ФРАНЦИИ",
+    "rating": "96",
+    "card_name": "ZIDANE",
+    "back_letter": "Z",
+    "full_name": "ЗИНЕДИН ЗИДАН",
+    "nickname": "ZIZOU",
+    "jersey": {"body": (26, 44, 112), "trim": (255, 255, 255), "num": (255, 255, 255),
+               "num_stroke": (200, 160, 70), "stripe": [(30, 70, 170), (255, 255, 255), (220, 40, 50)],
+               "number": "10"},
+    "card_stats": [("85", "СКР"), ("91", "УДР"), ("95", "ПАС"), ("97", "ДРБ"), ("76", "ЗЩТ"), ("88", "ФИЗ")],
+    "stats": [("СКОРОСТЬ", 85), ("УДАРЫ", 91), ("ПАСЫ", 95), ("ДРИБЛИНГ", 97), ("ЗАЩИТА", 76), ("ФИЗИКА", 88)],
+    "clubs": [
+        ("1989–1992", "КАНН", "61", "6"),
+        ("1992–1996", "БОРДО", "139", "28"),
+        ("1996–2001", "ЮВЕНТУС", "151", "24"),
+        ("2001–2006", "РЕАЛ МАДРИД", "155", "37"),
+    ],
+    "national": "СБОРНАЯ ФРАНЦИИ: 108 МАТЧЕЙ · 31 ГОЛ",
+    "trophies_ru": [
+        ("1998", "ЧЕМПИОН", "МИРА"),
+        ("2000", "ЧЕМПИОН", "ЕВРОПЫ"),
+        ("2002", "ЛИГА", "ЧЕМПИОНОВ"),
+        ("1998", "ЗОЛОТОЙ", "МЯЧ"),
+        ("×3", "ИГРОК ГОДА", "ФИФА"),
+        ("×2", "ЧЕМПИОН", "ИТАЛИИ"),
+    ],
+    "trophies_en": [
+        ("1998", "WORLD CUP", "WINNER"),
+        ("2000", "EURO", "WINNER"),
+        ("2002", "CHAMPIONS", "LEAGUE"),
+        ("1998", "BALLON", "D'OR"),
+        ("×3", "FIFA WORLD", "PLAYER"),
+        ("×2", "SERIE A", "CHAMPION"),
+    ],
+}
+
+RONALDO = {
+    "out": "ronaldo_card",
+    "flag": flag_brazil,
+    "country": "BRAZIL",
+    "country_glow": (60, 200, 90),
+    "country_tint": (25, 110, 50),
+    "pos": "ST",
+    "pos_long": "STRIKER",
+    "club_lines": [("INTER", 250, 900)],
+    "club_glow": (70, 120, 255),
+    "club_tint": (30, 60, 150),
+    "club_sub": "BARCELONA · INTER · REAL MADRID · BRAZIL",
+    "rating": "96",
+    "card_name": "RONALDO",
+    "back_letter": "R",
+    "full_name": "RONALDO NAZÁRIO",
+    "nickname": "R9",
+    "jersey": {"body": (250, 214, 30), "trim": (0, 140, 60), "num": (0, 120, 55),
+               "num_stroke": (255, 255, 255), "stripe": [(0, 140, 60), (20, 40, 130), (0, 140, 60)],
+               "number": "9"},
+    "card_stats": [("97", "PAC"), ("95", "SHO"), ("81", "PAS"), ("95", "DRI"), ("45", "DEF"), ("82", "PHY")],
+    "stats": [("PACE", 97), ("SHOOTING", 95), ("PASSING", 81), ("DRIBBLING", 95), ("DEFENDING", 45), ("PHYSICAL", 82)],
+    "clubs": [
+        ("1994–1996", "PSV", "46", "42"),
+        ("1996–1997", "BARCELONA", "37", "34"),
+        ("1997–2002", "INTER", "68", "49"),
+        ("2002–2007", "REAL MADRID", "127", "83"),
+    ],
+    "national": "BRAZIL: 98 CAPS · 62 GOALS",
+    "trophies_ru": None,
+    "trophies_en": [
+        ("×2", "WORLD CUP", "WINNER"),
+        ("×2", "BALLON", "D'OR"),
+        ("×3", "FIFA WORLD", "PLAYER"),
+        ("2002", "WORLD CUP", "GOLDEN BOOT"),
+        ("1998", "UEFA CUP", "WINNER"),
+        ("×2", "LA LIGA", "CHAMPION"),
+    ],
+}
+
+PLAYERS = {"zidane": ZIDANE, "ronaldo": RONALDO}
