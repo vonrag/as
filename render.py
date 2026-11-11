@@ -5,6 +5,7 @@
 Всё рисуется кодом (PIL + numpy), звук синтезируется, сборка — ffmpeg.
     python3 render.py                 -> zidane_card.mp4
     python3 render.py --preview 4 11  -> PNG-кадры на 4 с и 11 с в preview/
+    python3 render.py --lang en       -> zidane_card_en.mp4 (английская версия)
 """
 import math
 import os
@@ -21,7 +22,28 @@ W, H = 1080, 1920
 FPS = 30
 DUR = 30.0
 N = int(FPS * DUR)
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "zidane_card.mp4")
+LANG = "en" if "--lang" in sys.argv and sys.argv[sys.argv.index("--lang") + 1] == "en" else "ru"
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                   "zidane_card_en.mp4" if LANG == "en" else "zidane_card.mp4")
+
+# Все надписи пишутся по-русски; для английской версии подменяются здесь.
+EN = {
+    "ЦАП": "CAM", "СКР": "PAC", "УДР": "SHO", "ПАС": "PAS", "ДРБ": "DRI", "ЗЩТ": "DEF", "ФИЗ": "PHY",
+    "ЛЕГЕНДА": "LEGEND", "ВЫХОДИТ НА ПОЛЕ": "WALKS OUT", "ФРАНЦИЯ": "FRANCE",
+    "АТАКУЮЩИЙ ПОЛУЗАЩИТНИК": "ATTACKING MIDFIELDER", "РЕАЛ": "REAL", "МАДРИД": "MADRID",
+    "ЮВЕНТУС · РЕАЛ · СБОРНАЯ ФРАНЦИИ": "JUVENTUS · REAL MADRID · FRANCE",
+    "ЗИНЕДИН ЗИДАН": "ZINEDINE ZIDANE", "ХАРАКТЕРИСТИКИ": "ATTRIBUTES",
+    "СКОРОСТЬ": "PACE", "УДАРЫ": "SHOOTING", "ПАСЫ": "PASSING", "ДРИБЛИНГ": "DRIBBLING",
+    "ЗАЩИТА": "DEFENDING", "ФИЗИКА": "PHYSICAL",
+    "КАРЬЕРА": "CAREER", "МАТЧИ И ГОЛЫ В ЧЕМПИОНАТАХ": "LEAGUE APPEARANCES & GOALS",
+    "КАНН": "CANNES", "БОРДО": "BORDEAUX", "ЮВЕНТУС": "JUVENTUS", "РЕАЛ МАДРИД": "REAL MADRID",
+    "ИГР": "APPS", "ГОЛОВ": "GOALS", "СБОРНАЯ ФРАНЦИИ: 108 МАТЧЕЙ · 31 ГОЛ": "FRANCE: 108 CAPS · 31 GOALS",
+    "ТРОФЕИ": "TROPHIES", "ЛЕГЕНДА · 96": "LEGEND · 96",
+}
+
+
+def tr(text):
+    return EN.get(text, text) if LANG == "en" else text
 
 FONT_DIR = "/usr/share/fonts/opentype/inter/"
 BLACK = "InterDisplay-Black.otf"
@@ -77,6 +99,7 @@ def font(name, size):
 
 @lru_cache(None)
 def timg(text, fname, size, fill=WHITE, tracking=0, stroke=0, sfill=None, glow=0, gcol=None, galpha=1.0):
+    text = tr(text)
     f = font(fname, size)
     widths = [f.getlength(c) for c in text]
     tw = int(sum(widths) + tracking * max(0, len(text) - 1))
@@ -411,6 +434,13 @@ TROPHIES = [
     ("1998", "ЗОЛОТОЙ", "МЯЧ"),
     ("×3", "ИГРОК ГОДА", "ФИФА"),
     ("×2", "ЧЕМПИОН", "ИТАЛИИ"),
+] if LANG == "ru" else [
+    ("1998", "WORLD CUP", "WINNER"),
+    ("2000", "EURO", "WINNER"),
+    ("2002", "CHAMPIONS", "LEAGUE"),
+    ("1998", "BALLON", "D'OR"),
+    ("×3", "FIFA WORLD", "PLAYER"),
+    ("×2", "SERIE A", "CHAMPION"),
 ]
 
 
@@ -742,10 +772,12 @@ def make_audio(path):
 
 
 def main():
-    if len(sys.argv) > 2 and sys.argv[1] == "--preview":
+    if "--preview" in sys.argv:
+        args = sys.argv[sys.argv.index("--preview") + 1:]
+        times = [a for a in args if not a.startswith("--") and a not in ("ru", "en")]
         os.makedirs("preview", exist_ok=True)
-        for s in sys.argv[2:]:
-            render(float(s)).save(f"preview/frame_{float(s):05.2f}.png")
+        for s in times:
+            render(float(s)).save(f"preview/{LANG}_frame_{float(s):05.2f}.png")
         return
     wav = OUT.replace(".mp4", ".wav")
     make_audio(wav)
