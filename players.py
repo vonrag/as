@@ -29,6 +29,14 @@ def flag_brazil(w, h):
     return a
 
 
+def flag_england(w, h):
+    a = np.full((h, w, 3), 245, np.float32)
+    t = int(h * 0.2)
+    a[h // 2 - t // 2: h // 2 + t // 2, :] = (205, 20, 45)
+    a[:, w // 2 - t // 2: w // 2 + t // 2] = (205, 20, 45)
+    return a
+
+
 ZIDANE = {
     "out": "zidane_card",
     "flag": flag_france,
@@ -156,4 +164,43 @@ KAKA = {
     ],
 }
 
-PLAYERS = {"zidane": ZIDANE, "ronaldo": RONALDO, "kaka": KAKA}
+BECKHAM = {
+    "out": "beckham_card",
+    "flag": flag_england,
+    "country": "ENGLAND",
+    "country_glow": (230, 60, 80),
+    "country_tint": (120, 30, 45),
+    "pos": "RM",
+    "pos_long": "RIGHT MIDFIELDER",
+    "club_lines": [("MANCHESTER", 130, 790), ("UNITED", 210, 990)],
+    "club_glow": (235, 40, 50),
+    "club_tint": (140, 22, 30),
+    "club_sub": "MAN UTD · REAL MADRID · LA GALAXY · ENGLAND",
+    "rating": "93",
+    "card_name": "BECKHAM",
+    "back_letter": "B",
+    "full_name": "DAVID BECKHAM",
+    "nickname": "BECKS",
+    "jersey": {"body": (205, 22, 32), "trim": (255, 255, 255), "num": (255, 255, 255),
+               "num_stroke": (20, 20, 20), "stripe": None, "number": "7"},
+    "card_stats": [("81", "PAC"), ("87", "SHO"), ("95", "PAS"), ("85", "DRI"), ("66", "DEF"), ("79", "PHY")],
+    "stats": [("PACE", 81), ("SHOOTING", 87), ("PASSING", 95), ("DRIBBLING", 85), ("DEFENDING", 66), ("PHYSICAL", 79)],
+    "clubs": [
+        ("1992–2003", "MAN UTD", "265", "62"),
+        ("2003–2007", "REAL MADRID", "116", "13"),
+        ("2007–2012", "LA GALAXY", "98", "18"),
+        ("2009–2010", "MILAN (LOAN)", "29", "2"),
+    ],
+    "national": "ENGLAND: 115 CAPS · 17 GOALS",
+    "trophies_ru": None,
+    "trophies_en": [
+        ("1999", "CHAMPIONS", "LEAGUE"),
+        ("×6", "PREMIER", "LEAGUE"),
+        ("×2", "FA CUP", "WINNER"),
+        ("2007", "LA LIGA", "CHAMPION"),
+        ("×2", "MLS CUP", "WINNER"),
+        ("2013", "LIGUE 1", "CHAMPION"),
+    ],
+}
+
+PLAYERS = {"zidane": ZIDANE, "ronaldo": RONALDO, "kaka": KAKA, "beckham": BECKHAM}
