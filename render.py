@@ -267,6 +267,20 @@ def draw_jersey(img, cx, cy, s):
     d = ImageDraw.Draw(img)
     J = P["jersey"]
     d.polygon(pts, fill=J["body"])
+    if J.get("stripes"):  # вертикальные полосы клубной формы
+        m = Image.new("L", img.size, 0)
+        ImageDraw.Draw(m).polygon(pts, fill=255)
+        st = Image.new("RGBA", img.size, (0, 0, 0, 0))
+        sd = ImageDraw.Draw(st)
+        sw = s * 0.26
+        x = cx - 1.4 * s
+        k = 0
+        while x < cx + 1.4 * s:
+            sd.rectangle((x, cy - 1.1 * s, x + sw, cy + 1.1 * s), fill=J["stripes"][k % len(J["stripes"])])
+            x += sw
+            k += 1
+        img.paste(st, (0, 0), Image.fromarray(np.minimum(np.array(m), np.array(st.getchannel("A")))))
+        d = ImageDraw.Draw(img)
     # манжеты и ворот
     d.line([(cx - 1.30 * s, cy - 0.22 * s), (cx - 0.95 * s, cy)], fill=J["trim"], width=int(s * 0.07))
     d.line([(cx + 1.30 * s, cy - 0.22 * s), (cx + 0.95 * s, cy)], fill=J["trim"], width=int(s * 0.07))
@@ -274,7 +288,7 @@ def draw_jersey(img, cx, cy, s):
            fill=J["trim"], width=int(s * 0.06))
     # полоска цветов флага на груди
     by = cy - 0.42 * s
-    for i, col in enumerate(J["stripe"]):
+    for i, col in enumerate(J["stripe"] or []):
         d.rectangle((cx - 0.76 * s + i * 0.507 * s, by, cx - 0.76 * s + (i + 1) * 0.507 * s, by + 0.07 * s), fill=col)
     num = timg(J["number"], BLACK, int(s * 0.95), fill=J["num"], stroke=3, sfill=J["num_stroke"])
     img.alpha_composite(num, (int(cx - num.width / 2), int(cy + 0.25 * s - num.height / 2)))

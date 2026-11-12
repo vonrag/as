@@ -116,4 +116,44 @@ RONALDO = {
     ],
 }
 
-PLAYERS = {"zidane": ZIDANE, "ronaldo": RONALDO}
+KAKA = {
+    "out": "kaka_card",
+    "flag": flag_brazil,
+    "country": "BRAZIL",
+    "country_glow": (60, 200, 90),
+    "country_tint": (25, 110, 50),
+    "pos": "CAM",
+    "pos_long": "ATTACKING MIDFIELDER",
+    "club_lines": [("MILAN", 250, 900)],
+    "club_glow": (235, 50, 60),
+    "club_tint": (135, 28, 34),
+    "club_sub": "SÃO PAULO · MILAN · REAL MADRID · BRAZIL",
+    "rating": "95",
+    "card_name": "KAKÁ",
+    "back_letter": "K",
+    "full_name": "RICARDO KAKÁ",
+    "nickname": "KAKÁ",
+    "jersey": {"body": (200, 20, 32), "trim": (15, 15, 15), "num": (255, 255, 255),
+               "num_stroke": (15, 15, 15), "stripe": None, "stripes": [(200, 20, 32), (18, 18, 18)],
+               "number": "22"},
+    "card_stats": [("93", "PAC"), ("89", "SHO"), ("90", "PAS"), ("93", "DRI"), ("45", "DEF"), ("81", "PHY")],
+    "stats": [("PACE", 93), ("SHOOTING", 89), ("PASSING", 90), ("DRIBBLING", 93), ("DEFENDING", 45), ("PHYSICAL", 81)],
+    "clubs": [
+        ("2001–2003", "SÃO PAULO", "59", "23"),
+        ("2003–2009", "MILAN", "193", "70"),
+        ("2009–2013", "REAL MADRID", "85", "23"),
+        ("2015–2017", "ORLANDO CITY", "75", "24"),
+    ],
+    "national": "BRAZIL: 92 CAPS · 29 GOALS",
+    "trophies_ru": None,
+    "trophies_en": [
+        ("2002", "WORLD CUP", "WINNER"),
+        ("2007", "BALLON", "D'OR"),
+        ("2007", "FIFA WORLD", "PLAYER"),
+        ("2007", "CHAMPIONS", "LEAGUE"),
+        ("2004", "SERIE A", "CHAMPION"),
+        ("×2", "CONFED CUP", "WINNER"),
+    ],
+}
+
+PLAYERS = {"zidane": ZIDANE, "ronaldo": RONALDO, "kaka": KAKA}
