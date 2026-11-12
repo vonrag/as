@@ -34,6 +34,8 @@ def _arg(name, default):
 
 LANG = "en" if _arg("--lang", "ru") == "en" else "ru"
 P = PLAYERS[_arg("--player", "zidane")]
+if LANG == "ru" and "ru" in P:  # русские надписи для игроков, чьи данные записаны по-английски
+    P = {**P, **P["ru"]}
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                    P["out"] + ("_en.mp4" if LANG == "en" else ".mp4"))
 
@@ -434,7 +436,11 @@ CLUBS = P["clubs"]
 def build_club_plate(years, name, games, goals):
     im = rounded_plate(940, 210)
     im.alpha_composite(timg(years, XB, 44, fill=GOLD, tracking=2), (46, 22))
-    im.alpha_composite(timg(name, BLACK, 74, fill=WHITE), (44, 82))
+    size = 74  # длинные названия уменьшаются, чтобы не наезжать на цифры
+    while size > 44 and timg(name, BLACK, size, fill=WHITE).width > 560:
+        size -= 2
+    nm = timg(name, BLACK, size, fill=WHITE)
+    im.alpha_composite(nm, (44, int(82 + (timg(name, BLACK, 74, fill=WHITE).height - nm.height) / 2)))
     g = timg(games, BLACK, 66, fill=WHITE)
     gl = timg("ИГР", SEMI, 28, fill=(190, 190, 210), tracking=3)
     s = timg(goals, BLACK, 66, fill=GOLD)
