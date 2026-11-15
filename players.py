@@ -37,6 +37,13 @@ def flag_england(w, h):
     return a
 
 
+def flag_spain(w, h):
+    a = np.zeros((h, w, 3), np.float32)
+    a[:] = (198, 11, 30)
+    a[h // 4: 3 * h // 4] = (255, 196, 0)
+    return a
+
+
 ZIDANE = {
     "out": "zidane_card",
     "flag": flag_france,
@@ -228,4 +235,44 @@ BECKHAM = {
     },
 }
 
-PLAYERS = {"zidane": ZIDANE, "ronaldo": RONALDO, "kaka": KAKA, "beckham": BECKHAM}
+XAVI = {
+    "out": "xavi_card",
+    "flag": flag_spain,
+    "country": "SPAIN",
+    "country_glow": (255, 190, 40),
+    "country_tint": (140, 30, 30),
+    "pos": "CM",
+    "pos_long": "CENTRAL MIDFIELDER",
+    "club_lines": [("BARCELONA", 150, 900)],
+    "club_glow": (60, 90, 230),
+    "club_tint": (95, 30, 90),
+    "club_sub": "BARCELONA · AL SADD · SPAIN",
+    "rating": "94",
+    "card_name": "XAVI",
+    "back_letter": "X",
+    "full_name": "XAVI HERNÁNDEZ",
+    "nickname": "XAVI",
+    "jersey": {"body": (20, 50, 140), "trim": (250, 200, 40), "num": (250, 200, 40),
+               "num_stroke": (20, 20, 50), "stripe": None, "stripes": [(20, 50, 140), (165, 20, 60)],
+               "number": "6"},
+    "card_stats": [("74", "PAC"), ("80", "SHO"), ("97", "PAS"), ("92", "DRI"), ("70", "DEF"), ("72", "PHY")],
+    "stats": [("PACE", 74), ("SHOOTING", 80), ("PASSING", 97), ("DRIBBLING", 92), ("DEFENDING", 70), ("PHYSICAL", 72)],
+    "career_sub": "APPEARANCES & GOALS",
+    "clubs": [
+        ("1998–2015 · LA LIGA", "BARCELONA", "505", "58"),
+        ("1998–2015 · ALL COMPS", "BARCELONA", "767", "85"),
+        ("2000–2014", "SPAIN", "133", "13"),
+    ],
+    "national": "LATER: AL SADD · BARÇA COACH 2021–24",
+    "trophies_ru": None,
+    "trophies_en": [
+        ("2010", "WORLD CUP", "WINNER"),
+        ("×2", "EURO", "WINNER"),
+        ("×4", "CHAMPIONS", "LEAGUE"),
+        ("×8", "LA LIGA", "CHAMPION"),
+        ("×2", "CLUB WORLD", "CUP"),
+        ("MVP", "EURO", "2008"),
+    ],
+}
+
+PLAYERS = {"zidane": ZIDANE, "ronaldo": RONALDO, "kaka": KAKA, "beckham": BECKHAM, "xavi": XAVI}

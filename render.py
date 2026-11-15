@@ -599,7 +599,7 @@ def render(t):
     if a:
         blit(canvas, timg("КАРЬЕРА", BLACK, 120, fill=GOLD_L, glow=14, gcol=(255, 170, 40), galpha=0.6),
              W / 2, 270, alpha=a, scale=0.92 + 0.08 * ease_out(prog(t, 20, 20.6)))
-        blit(canvas, timg("МАТЧИ И ГОЛЫ В ЧЕМПИОНАТАХ", BOLD, 32, fill=(200, 200, 220), tracking=6), W / 2, 380, alpha=a)
+        blit(canvas, timg(P.get("career_sub", "МАТЧИ И ГОЛЫ В ЧЕМПИОНАТАХ"), BOLD, 32, fill=(200, 200, 220), tracking=6), W / 2, 380, alpha=a)
         for i, pl in enumerate(CLUB_PLATES):
             st = 20.3 + i * 0.35
             if t < st:
