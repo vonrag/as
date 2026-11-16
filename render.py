@@ -142,6 +142,15 @@ def timg(text, fname, size, fill=WHITE, tracking=0, stroke=0, sfill=None, glow=0
     return im
 
 
+def fit(text, fname, size, maxw, **kw):
+    """Текст, уменьшенный по ширине, чтобы не выходить за поля кадра."""
+    im = timg(text, fname, size, **kw)
+    while im.width > maxw and size > 20:
+        size -= 2
+        im = timg(text, fname, size, **kw)
+    return im
+
+
 def with_alpha(im, alpha):
     if alpha >= 0.999:
         return im
@@ -565,7 +574,7 @@ def render(t):
 
         a = win(t, 11.0, 13.4, 0.5, 0.4)
         if a:
-            blit(canvas, timg(P["full_name"], BLACK, 84, fill=WHITE, tracking=4, glow=10, gcol=(255, 180, 60), galpha=0.5),
+            blit(canvas, fit(P["full_name"], BLACK, 84, 960, fill=WHITE, tracking=4, glow=10, gcol=(255, 180, 60), galpha=0.5),
                  W / 2, 190, alpha=a, scale=0.9 + 0.1 * ease_out(prog(t, 11.0, 11.7)))
             blit(canvas, timg(f'{P["nickname"]} · {P["rating"]} OVR', XB, 48, fill=GOLD, tracking=10), W / 2, 1745,
                  alpha=a * ease_out(prog(t, 11.4, 12.0)))
@@ -607,7 +616,7 @@ def render(t):
             p = ease_back(prog(t, st, st + 0.55), 1.2)
             x = W / 2 + (1 - p) * 1100
             blit(canvas, pl, x, 560 + i * 270, alpha=a * clamp(prog(t, st, st + 0.3)))
-        blit(canvas, timg(P["national"], XB, 38, fill=WHITE, tracking=3), W / 2, 1700,
+        blit(canvas, fit(P["national"], XB, 38, 960, fill=WHITE, tracking=3), W / 2, 1700,
              alpha=a * ease_out(prog(t, 21.9, 22.5)))
 
     # ---- 5b. Трофеи 23.6–27
@@ -631,7 +640,7 @@ def render(t):
              scale=1.15 - 0.1 * p, alpha=0.13 * p)
         draw_card(canvas, W / 2, 860 + 12 * math.sin(t * 2.2), 0.6 + 0.42 * p, (1 - p) * 2 * math.pi,
                   1.0, sheen_at(t, [27.9, 29.0], 0.8), 0.7 + 0.2 * math.sin(t * 3))
-        blit(canvas, timg(P["full_name"], BLACK, 78, fill=WHITE, tracking=4), W / 2, 1520,
+        blit(canvas, fit(P["full_name"], BLACK, 78, 960, fill=WHITE, tracking=4), W / 2, 1520,
              alpha=ease_out(prog(t, 27.6, 28.3)))
         blit(canvas, timg(tr("ЛЕГЕНДА") + " · " + P["rating"], XB, 54, fill=GOLD, tracking=12, glow=8, gcol=(255, 170, 40), galpha=0.5),
              W / 2, 1615, alpha=ease_out(prog(t, 27.9, 28.6)))

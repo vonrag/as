@@ -44,6 +44,21 @@ def flag_spain(w, h):
     return a
 
 
+def flag_portugal(w, h):
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    a = np.zeros((h, w, 3), np.float32)
+    a[:] = (210, 20, 30)
+    a[:, : int(w * 0.4)] = (0, 110, 50)
+    cx, cy = w * 0.4, h / 2
+    r = np.hypot(xx - cx, yy - cy)
+    a[(r <= h * 0.23) & (r >= h * 0.17)] = (255, 215, 0)
+    shield = (np.abs(xx - cx) <= h * 0.10) & (yy >= cy - h * 0.12) & (yy <= cy + h * 0.12)
+    a[shield] = (245, 245, 245)
+    inner = (np.abs(xx - cx) <= h * 0.07) & (yy >= cy - h * 0.09) & (yy <= cy + h * 0.09)
+    a[inner] = (20, 40, 140)
+    return a
+
+
 ZIDANE = {
     "out": "zidane_card",
     "flag": flag_france,
@@ -275,4 +290,44 @@ XAVI = {
     ],
 }
 
-PLAYERS = {"zidane": ZIDANE, "ronaldo": RONALDO, "kaka": KAKA, "beckham": BECKHAM, "xavi": XAVI}
+CRISTIANO = {
+    "out": "cristiano_card",
+    "flag": flag_portugal,
+    "country": "PORTUGAL",
+    "country_glow": (60, 200, 90),
+    "country_tint": (125, 28, 30),
+    "pos": "ST",
+    "pos_long": "STRIKER",
+    "club_lines": [("REAL", 230, 800), ("MADRID", 170, 1010)],
+    "club_glow": (200, 200, 255),
+    "club_tint": (70, 62, 120),
+    "club_sub": "MAN UTD · REAL MADRID · JUVENTUS · PORTUGAL",
+    "rating": "97",
+    "card_name": "RONALDO",
+    "back_letter": "7",
+    "full_name": "CRISTIANO RONALDO",
+    "nickname": "CR7",
+    "jersey": {"body": (245, 245, 245), "trim": (200, 160, 60), "num": (25, 35, 90),
+               "num_stroke": (200, 160, 60), "stripe": None, "number": "7"},
+    "card_stats": [("93", "PAC"), ("97", "SHO"), ("83", "PAS"), ("92", "DRI"), ("35", "DEF"), ("86", "PHY")],
+    "stats": [("PACE", 93), ("SHOOTING", 97), ("PASSING", 83), ("DRIBBLING", 92), ("DEFENDING", 35), ("PHYSICAL", 86)],
+    "clubs": [
+        ("2002–2003", "SPORTING CP", "25", "3"),
+        ("2003–2009", "MAN UTD", "196", "84"),
+        ("2009–2018", "REAL MADRID", "292", "311"),
+        ("2018–2021", "JUVENTUS", "98", "81"),
+    ],
+    "national": "#1 INTERNATIONAL SCORER OF ALL TIME",
+    "trophies_ru": None,
+    "trophies_en": [
+        ("×5", "BALLON", "D'OR"),
+        ("×5", "CHAMPIONS", "LEAGUE"),
+        ("2016", "EURO", "WINNER"),
+        ("×2", "NATIONS", "LEAGUE"),
+        ("×3", "PREMIER", "LEAGUE"),
+        ("×2", "LA LIGA", "CHAMPION"),
+    ],
+}
+
+PLAYERS = {"zidane": ZIDANE, "ronaldo": RONALDO, "kaka": KAKA, "beckham": BECKHAM, "xavi": XAVI,
+           "cristiano": CRISTIANO}
