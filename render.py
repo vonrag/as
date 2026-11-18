@@ -450,13 +450,16 @@ def build_club_plate(years, name, games, goals):
         size -= 2
     nm = timg(name, BLACK, size, fill=WHITE)
     im.alpha_composite(nm, (44, int(82 + (timg(name, BLACK, 74, fill=WHITE).height - nm.height) / 2)))
-    g = timg(games, BLACK, 66, fill=WHITE)
+    ns = 66  # два трёхзначных числа уменьшаются, чтобы не слипаться
+    while ns > 44 and (timg(games, BLACK, ns, fill=WHITE).width + timg(goals, BLACK, ns, fill=GOLD).width) / 2 > 118:
+        ns -= 2
+    g = timg(games, BLACK, ns, fill=WHITE)
     gl = timg("ИГР", SEMI, 28, fill=(190, 190, 210), tracking=3)
-    s = timg(goals, BLACK, 66, fill=GOLD)
+    s = timg(goals, BLACK, ns, fill=GOLD)
     sl = timg("ГОЛОВ", SEMI, 28, fill=(190, 190, 210), tracking=3)
-    im.alpha_composite(g, (int(720 - g.width / 2), 30))
+    im.alpha_composite(g, (int(720 - g.width / 2), int(30 + (66 - ns) * 0.6)))
     im.alpha_composite(gl, (int(720 - gl.width / 2), 128))
-    im.alpha_composite(s, (int(855 - s.width / 2), 30))
+    im.alpha_composite(s, (int(855 - s.width / 2), int(30 + (66 - ns) * 0.6)))
     im.alpha_composite(sl, (int(855 - sl.width / 2), 128))
     return im
 

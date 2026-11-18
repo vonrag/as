@@ -329,5 +329,45 @@ CRISTIANO = {
     ],
 }
 
+MBAPPE = {
+    "out": "mbappe_card",
+    "flag": flag_france,
+    "country": "FRANCE",
+    "country_glow": (80, 120, 255),
+    "country_tint": (30, 55, 140),
+    "pos": "ST",
+    "pos_long": "STRIKER",
+    "club_lines": [("PARIS", 230, 790), ("SAINT-GERMAIN", 95, 975)],
+    "club_glow": (225, 40, 60),
+    "club_tint": (35, 40, 115),
+    "club_sub": "MONACO · PSG · REAL MADRID · FRANCE",
+    "rating": "96",
+    "card_name": "MBAPPÉ",
+    "back_letter": "K",
+    "full_name": "KYLIAN MBAPPÉ",
+    "nickname": "MBAPPÉ",
+    "jersey": {"body": (26, 44, 112), "trim": (255, 255, 255), "num": (255, 255, 255),
+               "num_stroke": (200, 160, 70), "stripe": [(30, 70, 170), (255, 255, 255), (220, 40, 50)],
+               "number": "10"},
+    "card_stats": [("99", "PAC"), ("93", "SHO"), ("83", "PAS"), ("93", "DRI"), ("37", "DEF"), ("80", "PHY")],
+    "stats": [("PACE", 99), ("SHOOTING", 93), ("PASSING", 83), ("DRIBBLING", 93), ("DEFENDING", 37), ("PHYSICAL", 80)],
+    "career_sub": "APPEARANCES & GOALS · ALL COMPETITIONS",
+    "clubs": [
+        ("2015–2017", "MONACO", "60", "27"),
+        ("2017–2024", "PSG", "308", "256"),
+        ("2018 & 2022", "WORLD CUPS", "14", "12"),
+    ],
+    "national": "PSG ALL-TIME TOP SCORER",
+    "trophies_ru": None,
+    "trophies_en": [
+        ("2018", "WORLD CUP", "WINNER"),
+        ("2021", "NATIONS", "LEAGUE"),
+        ("×7", "LIGUE 1", "CHAMPION"),
+        ("2022", "WORLD CUP", "GOLDEN BOOT"),
+        ("2022", "WORLD CUP FINAL", "HAT-TRICK"),
+        ("256", "PSG RECORD", "GOALS"),
+    ],
+}
+
 PLAYERS = {"zidane": ZIDANE, "ronaldo": RONALDO, "kaka": KAKA, "beckham": BECKHAM, "xavi": XAVI,
-           "cristiano": CRISTIANO}
+           "cristiano": CRISTIANO, "mbappe": MBAPPE}
