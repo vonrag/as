@@ -59,6 +59,19 @@ def flag_portugal(w, h):
     return a
 
 
+def flag_argentina(w, h):
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    a = np.zeros((h, w, 3), np.float32)
+    a[:] = (117, 170, 219)
+    a[h // 3: 2 * h // 3] = (250, 250, 250)
+    r = np.hypot(xx - w / 2, yy - h / 2)
+    ang = np.arctan2(yy - h / 2, xx - w / 2)
+    rays = (r < h * 0.14) & (np.cos(ang * 16) > 0.2)
+    a[rays] = (245, 180, 30)
+    a[r < h * 0.09] = (250, 190, 40)
+    return a
+
+
 ZIDANE = {
     "out": "zidane_card",
     "flag": flag_france,
@@ -369,5 +382,46 @@ MBAPPE = {
     ],
 }
 
+MARADONA = {
+    "out": "maradona_card",
+    "flag": flag_argentina,
+    "country": "ARGENTINA",
+    "country_glow": (120, 190, 255),
+    "country_tint": (40, 95, 160),
+    "pos": "CAM",
+    "pos_long": "ATTACKING MIDFIELDER",
+    "club_lines": [("NAPOLI", 250, 900)],
+    "club_glow": (60, 150, 255),
+    "club_tint": (30, 80, 160),
+    "club_sub": "BOCA JUNIORS · BARCELONA · NAPOLI · ARGENTINA",
+    "rating": "97",
+    "card_name": "MARADONA",
+    "back_letter": "D",
+    "full_name": "DIEGO MARADONA",
+    "nickname": "D10S",
+    "jersey": {"body": (250, 250, 250), "trim": (20, 30, 60), "num": (20, 25, 40),
+               "num_stroke": (255, 255, 255), "stripe": None, "stripes": [(117, 170, 219), (250, 250, 250)],
+               "number": "10"},
+    "card_stats": [("90", "PAC"), ("92", "SHO"), ("93", "PAS"), ("99", "DRI"), ("40", "DEF"), ("78", "PHY")],
+    "stats": [("PACE", 90), ("SHOOTING", 92), ("PASSING", 93), ("DRIBBLING", 99), ("DEFENDING", 40), ("PHYSICAL", 78)],
+    "clubs": [
+        ("1976–1981", "ARGENTINOS JRS", "166", "116"),
+        ("1981–1982", "BOCA JUNIORS", "40", "28"),
+        ("1982–1984", "BARCELONA", "36", "22"),
+        ("1984–1991", "NAPOLI", "188", "81"),
+    ],
+    "national": "ARGENTINA: 91 CAPS · 34 GOALS",
+    "trophies_ru": None,
+    "trophies_en": [
+        ("1986", "WORLD CUP", "WINNER"),
+        ("1986", "WORLD CUP", "GOLDEN BALL"),
+        ("×2", "SERIE A", "CHAMPION"),
+        ("1989", "UEFA CUP", "WINNER"),
+        ("1987", "COPPA", "ITALIA"),
+        ("2000", "FIFA PLAYER", "OF THE CENTURY"),
+    ],
+}
+
 PLAYERS = {"zidane": ZIDANE, "ronaldo": RONALDO, "kaka": KAKA, "beckham": BECKHAM, "xavi": XAVI,
-           "cristiano": CRISTIANO, "mbappe": MBAPPE}
+           "cristiano": CRISTIANO, "mbappe": MBAPPE,
+           "maradona": MARADONA}

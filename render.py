@@ -335,7 +335,7 @@ def build_front():
     d.polygon(star_pts(lx, CH * 0.415 + 46, 34, 14), fill=GOLD_L)
 
     ny = CH * 0.585
-    blit_on(timg(P["card_name"], BLACK, 108, fill=INK, tracking=4), CW / 2, ny)
+    blit_on(fit(P["card_name"], BLACK, 108, 580, fill=INK, tracking=4), CW / 2, ny)
     d.line([(CW * 0.14, CH * 0.645), (CW * 0.86, CH * 0.645)], fill=INK, width=3)
     stats = P["card_stats"]
     for i, (v, lab) in enumerate(stats):
@@ -545,7 +545,7 @@ def render(t):
         for txt, size, y in P["club_lines"]:
             blit(canvas, timg(txt, BLACK, size, fill=WHITE, glow=18, gcol=P["club_glow"], galpha=0.7),
                  W / 2, y, scale=s, alpha=a)
-        blit(canvas, timg(P["club_sub"], BOLD, 34, fill=GOLD, tracking=5), W / 2, 1170,
+        blit(canvas, fit(P["club_sub"], BOLD, 34, 940, fill=GOLD, tracking=5), W / 2, 1170,
              alpha=a * ease_out(prog(t, 7.4, 8.1)))
 
     # ---- 3–4. Карточка: вылет, представление, характеристики
